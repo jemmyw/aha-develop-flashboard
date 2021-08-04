@@ -1,0 +1,24 @@
+{
+  "name": "kealabs.flashboard",
+  "description": "Flashboard",
+  "version": "0.0.0",
+  "author": "kealabs",
+  "repository": {
+    "type": "git",
+    "url": "TODO: Add the GitHub URL to your extension in package.json"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/react": "^16.8.0"
+  },
+  "ahaExtension": {
+    "contributes": {
+      "commands": {
+        "flashboard": {
+          "title": "Flashboard",
+          "entryPoint": "src/commands/flashboard.ts"
+        }
+      }
+    }
+  }
+}
