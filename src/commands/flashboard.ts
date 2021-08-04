@@ -4,6 +4,22 @@ interface Config {
   enabled?: boolean;
 }
 
+const original = {
+  header: {
+    paddingTop: "16px",
+    paddingBottom: "16px",
+  },
+  grid: { padding: "20px" },
+};
+
+const updated = {
+  header: {
+    paddingTop: "4px",
+    paddingBottom: "10px",
+  },
+  grid: { padding: "5px" },
+};
+
 aha.on("flashboard", ({ record }, { identifier, settings }) => {});
 
 aha.on({ event: "aha.extensions.ready" }, () => {
@@ -100,9 +116,17 @@ function addToView({ enabled }: { enabled: boolean }) {
   host.appendChild(container);
 }
 
+function updateStyleWith(
+  element: HTMLElement,
+  newStyle: Partial<CSSStyleDeclaration>
+) {
+  Object.keys(newStyle).forEach((key) => {
+    element.style[key] = newStyle[key];
+  });
+}
+
 function modify() {
-  document.getElementById("page-nav").style.paddingTop = "4px";
-  document.getElementById("page-nav").style.paddingBottom = "10px";
+  updateStyleWith(document.getElementById("page-nav"), updated.header);
 
   document
     .getElementsByClassName("dashboard-rendered-filters")
@@ -115,15 +139,20 @@ function modify() {
   const workspace = document.getElementById("workspace-content");
   workspace
     .querySelectorAll('[class^="Dashboards--"]')
-    .forEach((dash: HTMLElement) => (dash.style.padding = "10px"));
+    .forEach(
+      (dash: HTMLElement) => (dash.style.padding = updated.grid.padding)
+    );
 
   const grid = document.getElementById("Dashboard-Grid");
   const style = grid.getAttribute("style");
-  grid.setAttribute("style", style.replaceAll("20px", "10px"));
+  grid.setAttribute(
+    "style",
+    style.replaceAll(original.grid.padding, updated.grid.padding)
+  );
 }
 
 function unmodify() {
-  document.getElementById("page-nav").style.padding = "16px";
+  updateStyleWith(document.getElementById("page-nav"), original.header);
 
   document
     .getElementsByClassName("dashboard-rendered-filters")
@@ -136,9 +165,14 @@ function unmodify() {
   const workspace = document.getElementById("workspace-content");
   workspace
     .querySelectorAll('[class^="Dashboards--"]')
-    .forEach((dash: HTMLElement) => (dash.style.padding = "20px"));
+    .forEach((dash: HTMLElement) => {
+      dash.style.padding = original.grid.padding;
+    });
 
   const grid = document.getElementById("Dashboard-Grid");
   const style = grid.getAttribute("style");
-  grid.setAttribute("style", style.replaceAll("10px", "20px"));
+  grid.setAttribute(
+    "style",
+    style.replaceAll(updated.grid.padding, original.grid.padding)
+  );
 }
