@@ -9,5 +9,5 @@
     "moduleResolution": "node",
     "target": "ES6"
   },
-  "include": [".aha-cache/types", "src"]
+  "include": [".aha-cache/types/*.ts", "src"]
 }

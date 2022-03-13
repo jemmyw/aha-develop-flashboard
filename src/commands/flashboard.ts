@@ -34,9 +34,11 @@ aha.on({ event: "aha.extensions.reloaded" }, () => {
 });
 
 async function initialize() {
+  console.log("init", isDashboard());
   if (!isDashboard()) return;
 
   const enabled = await isEnabled();
+  console.log("enabled", enabled);
   if (enabled) {
     modify();
   }
@@ -52,9 +54,9 @@ function isDashboard() {
 
 function bookmarkId() {
   if (!isDashboard()) return;
-  const el = document.querySelector('[data-react-class="Dashboards"]');
-  const props = JSON.parse(el.getAttribute("data-react-props"));
-  return props.meta.bookmarkId;
+  const el = document.querySelector("[data-current-bookmark-id]");
+  if (!el) return;
+  return el.getAttribute("data-current-bookmark-id");
 }
 
 function getUser() {
@@ -90,6 +92,7 @@ async function setEnabled(enable: boolean) {
 
   const config = await getBookmarkConfig();
   config.enabled = enable;
+  console.log(bookmarkId());
   await getUser().setExtensionField(IDENTIFIER, String(bookmarkId()), config);
 }
 
