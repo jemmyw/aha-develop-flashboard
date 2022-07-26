@@ -34,11 +34,9 @@ aha.on({ event: "aha.extensions.reloaded" }, () => {
 });
 
 async function initialize() {
-  console.log("init", isDashboard());
   if (!isDashboard()) return;
 
   const enabled = await isEnabled();
-  console.log("enabled", enabled);
   if (enabled) {
     modify();
   }
@@ -92,7 +90,6 @@ async function setEnabled(enable: boolean) {
 
   const config = await getBookmarkConfig();
   config.enabled = enable;
-  console.log(bookmarkId());
   await getUser().setExtensionField(IDENTIFIER, String(bookmarkId()), config);
 }
 
@@ -129,29 +126,34 @@ function updateStyleWith(
 }
 
 function modify() {
-  updateStyleWith(document.getElementById("page-nav"), updated.header);
+  try {
+    updateStyleWith(document.getElementById("page-nav"), updated.header);
 
-  document
-    .getElementsByClassName("dashboard-rendered-filters")
-    .item(0).parentElement.style.display = "none";
+    document
+      .getElementsByClassName("dashboard-rendered-filters")
+      .item(0).parentElement.style.display = "none";
 
-  document
-    .getElementsByClassName("report-type-description")
-    .item(0).parentElement.parentElement.style.display = "none";
+    document
+      .getElementsByClassName("report-type-description")
+      .item(0).parentElement.parentElement.style.display = "none";
 
-  const workspace = document.getElementById("workspace-content");
-  workspace
-    .querySelectorAll('[class^="Dashboards--"]')
-    .forEach(
-      (dash: HTMLElement) => (dash.style.padding = updated.grid.padding)
+    const workspace = document.getElementById("workspace-content");
+    workspace
+      .querySelectorAll('[class^="Dashboards--"]')
+      .forEach(
+        (dash: HTMLElement) => (dash.style.padding = updated.grid.padding)
+      );
+
+    const grid = document.getElementById("Dashboard-Grid");
+    const style = grid.getAttribute("style");
+    grid.setAttribute(
+      "style",
+      style.replaceAll(original.grid.padding, updated.grid.padding)
     );
-
-  const grid = document.getElementById("Dashboard-Grid");
-  const style = grid.getAttribute("style");
-  grid.setAttribute(
-    "style",
-    style.replaceAll(original.grid.padding, updated.grid.padding)
-  );
+  } catch (err) {
+    console.log("flashboard failed, retrying");
+    setTimeout(modify, 500);
+  }
 }
 
 function unmodify() {
